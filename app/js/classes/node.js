@@ -324,23 +324,53 @@ var Node = function()
 
 		return false;
 	}
-
+	this.is_overlapping = function (x1,x2,y1,y2){
+    	return Math.max(x1,y1) <= Math.min(x2,y2)
+	}
 	this.getLinksInNode = function(){
 		// find all the links
 		var links = self.body().match(/\[\[(.*?)\]\]/g);
 		var functionCallingNodeConnect = self.body().match(/\<\<(.*?)\>\>/g);
 		var nodesToReturn = []
+		var ranges = []
 		var exists = {};
+		
 		if(functionCallingNodeConnect != undefined){
 			for (var i = functionCallingNodeConnect.length - 1; i >= 0; i --)
 			{
-				if(functionCallingNodeConnect[i].includes("goToNodeIf"))
+				if(functionCallingNodeConnect[i].includes("goToNodeIf")){
 				functionCallingNodeConnect[i] = functionCallingNodeConnect[i].substr(2, functionCallingNodeConnect[i].length - 4).split(" ")//.toLowerCase(); 
 				var node1 = functionCallingNodeConnect[i][functionCallingNodeConnect[i].length -2]
 				var node2 = functionCallingNodeConnect[i][functionCallingNodeConnect[i].length -1]
 				if(node1 !== undefined && node2 !== undefined){
 					nodesToReturn.push(node1)
 					nodesToReturn.push(node2)
+				}
+				}
+				else if(functionCallingNodeConnect[i].includes("getNodeThatMatches")){
+					functionCallingNodeConnect[i].substr(2, functionCallingNodeConnect[i].length - 4).split(",")[1].split("|").forEach(element => {
+						element.trim()
+						if(element.trim().split(" ")[1].trim().match(/^(?=\d{1,13}(-\d{1,13}){1,1}$)[\d-]{1,6}$/g) && element.trim().split(" ")[1].trim().split("-")[0] >= 0 && element.trim().split(" ")[1].trim().split("-")[0] <= 100){
+							if(ranges.length == 0){
+							nodesToReturn.push(element.trim().split(" ")[0].trim())
+								ranges.push(element.trim().split(" ")[1].trim())
+							}else{
+								var range = element.trim().split(" ")[1].trim()
+								var shouldadd = false
+								ranges.forEach(r => {
+									if(!this.is_overlapping(r.split("-")[0], r.split("-")[1], range.split("-")[0],range.split("-")[1])){
+										nodesToReturn.push(element.trim().split(" ")[0].trim())
+									}
+
+								})
+
+
+							}
+						}
+						
+					
+					});
+
 				}
 			}
 		}
