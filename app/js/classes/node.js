@@ -328,10 +328,25 @@ var Node = function()
 	this.getLinksInNode = function(){
 		// find all the links
 		var links = self.body().match(/\[\[(.*?)\]\]/g);
-
+		var functionCallingNodeConnect = self.body().match(/\<\<(.*?)\>\>/g);
+		var nodesToReturn = []
+		var exists = {};
+		if(functionCallingNodeConnect != undefined){
+			for (var i = functionCallingNodeConnect.length - 1; i >= 0; i --)
+			{
+				if(functionCallingNodeConnect[i].includes("goToNodeIf"))
+				functionCallingNodeConnect[i] = functionCallingNodeConnect[i].substr(2, functionCallingNodeConnect[i].length - 4).split(" ")//.toLowerCase(); 
+				var node1 = functionCallingNodeConnect[i][functionCallingNodeConnect[i].length -2]
+				var node2 = functionCallingNodeConnect[i][functionCallingNodeConnect[i].length -1]
+				if(node1 !== undefined && node2 !== undefined){
+					nodesToReturn.push(node1)
+					nodesToReturn.push(node2)
+				}
+			}
+		}
 		if (links != undefined)
 		{
-			var exists = {};
+			
 			for (var i = links.length - 1; i >= 0; i --)
 			{
 				links[i] = links[i].substr(2, links[i].length - 4)//.toLowerCase(); 
@@ -346,8 +361,12 @@ var Node = function()
 					links.splice(i, 1);
 				}
 				exists[links[i]] = true;
+				nodesToReturn.push(links[i])
 			}
-			return links
+		
+		}
+		if(nodesToReturn.length > 0){
+			return nodesToReturn
 		}
 		else{return undefined}
 	}
