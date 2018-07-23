@@ -347,7 +347,7 @@ var Node = function()
 					nodesToReturn.push(node2)
 				}
 				}
-				else if(functionCallingNodeConnect[i].includes("getNodeThatMatches")){
+				else if(functionCallingNodeConnect[i].includes("getNodeThatMatchesRange")){
 					functionCallingNodeConnect[i].substr(2, functionCallingNodeConnect[i].length - 4).split(",")[1].split("|").forEach(element => {
 						element.trim()
 						if(element.trim().split(" ")[1].trim().match(/^(?=\d{1,13}(-\d{1,13}){1,1}$)[\d-]{1,6}$/g) && element.trim().split(" ")[1].trim().split("-")[0] >= 0 && element.trim().split(" ")[1].trim().split("-")[0] <= 100){
